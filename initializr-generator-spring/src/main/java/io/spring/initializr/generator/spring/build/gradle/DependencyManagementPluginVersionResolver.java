@@ -22,8 +22,10 @@ import io.spring.initializr.generator.project.ProjectDescription;
  * Strategy for resolving a dependency management plugin version from a platform version.
  *
  * @author Stephane Nicoll
+ * @deprecated for removal without a replacement
  */
 @FunctionalInterface
+@Deprecated(forRemoval = true)
 public interface DependencyManagementPluginVersionResolver {
 
 	/**

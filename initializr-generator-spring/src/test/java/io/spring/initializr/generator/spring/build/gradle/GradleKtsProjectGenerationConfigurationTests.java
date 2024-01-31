@@ -117,8 +117,9 @@ class GradleKtsProjectGenerationConfigurationTests {
 				"plugins {",
 				"    java",
 				"    id(\"org.springframework.boot\") version \"2.4.0\"",
-				"    id(\"io.spring.dependency-management\") version \"1.0.6.RELEASE\"",
 				"}",
+				"",
+				"apply(plugin = 'io.spring.dependency-management')",
 				"",
 				"group = \"com.example\"",
 				"version = \"0.0.1-SNAPSHOT\"",
@@ -140,30 +141,6 @@ class GradleKtsProjectGenerationConfigurationTests {
 				"tasks.withType<Test> {",
 				"    useJUnitPlatform()",
 				"}"); // @formatter:on
-	}
-
-	@Test
-	void dependencyManagementPluginFallbacksToMetadataIfNotPresent() {
-		MutableProjectDescription description = new MutableProjectDescription();
-		description.setPlatformVersion(Version.parse("2.4.0"));
-		description.setLanguage(new JavaLanguage("11"));
-		ProjectStructure project = this.projectTester.generate(description);
-		assertThat(project).textFile("build.gradle.kts")
-			.lines()
-			.contains("    id(\"io.spring.dependency-management\") version \"1.0.6.RELEASE\"");
-	}
-
-	@Test
-	void dependencyManagementPluginVersionResolverIsUsedIfPresent() {
-		MutableProjectDescription description = new MutableProjectDescription();
-		description.setPlatformVersion(Version.parse("2.4.0"));
-		description.setLanguage(new JavaLanguage("11"));
-		ProjectStructure project = this.projectTester
-			.withBean(DependencyManagementPluginVersionResolver.class, () -> (d) -> "1.5.1.RC1")
-			.generate(description);
-		assertThat(project).textFile("build.gradle.kts")
-			.lines()
-			.contains("    id(\"io.spring.dependency-management\") version \"1.5.1.RC1\"");
 	}
 
 	@Test

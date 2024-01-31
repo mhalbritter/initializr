@@ -145,7 +145,7 @@ class KotlinDslGradleBuildWriterTests extends GradleBuildWriterTests {
 	void gradleBuildWithApplyPlugin() {
 		GradleBuild build = new GradleBuild();
 		build.plugins().apply("io.spring.dependency-management");
-		assertThatIllegalStateException().isThrownBy(() -> write(build));
+		assertThat(write(build)).contains("apply(plugin = 'io.spring.dependency-management')");
 	}
 
 	@Test

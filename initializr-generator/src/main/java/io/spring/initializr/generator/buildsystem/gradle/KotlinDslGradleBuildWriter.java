@@ -48,12 +48,14 @@ public class KotlinDslGradleBuildWriter extends GradleBuildWriter {
 
 	@Override
 	protected void writePlugins(IndentingWriter writer, GradleBuild build) {
-		writeNestedCollection(writer, "plugins", extractStandardPlugin(build), this::pluginAsString, null);
+		writeNestedCollection(writer, "plugins", extractStandardPlugin(build), this::pluginAsString);
+		writeCollection(writer, extractApplyPlugins(build),
+				(plugin) -> "apply(plugin = '%s')".formatted(plugin.getId()), writer::println);
 		writer.println();
-		if (build.plugins().values().anyMatch(GradlePlugin::isApply)) {
-			throw new IllegalStateException(
-					"build.gradle.kts scripts shouldn't apply plugins. They should use the plugins block instead.");
-		}
+	}
+
+	private List<GradlePlugin> extractApplyPlugins(GradleBuild build) {
+		return build.plugins().values().filter(GradlePlugin::isApply).collect(Collectors.toList());
 	}
 
 	private String pluginAsString(StandardGradlePlugin plugin) {

@@ -36,12 +36,8 @@ public final class SpringBootPluginBuildCustomizer implements BuildCustomizer<Gr
 
 	private final ProjectDescription description;
 
-	private final DependencyManagementPluginVersionResolver versionResolver;
-
-	public SpringBootPluginBuildCustomizer(ProjectDescription description,
-			DependencyManagementPluginVersionResolver versionResolver) {
+	public SpringBootPluginBuildCustomizer(ProjectDescription description) {
 		this.description = description;
-		this.versionResolver = versionResolver;
 	}
 
 	@Override
@@ -49,9 +45,7 @@ public final class SpringBootPluginBuildCustomizer implements BuildCustomizer<Gr
 		build.plugins()
 			.add("org.springframework.boot",
 					(plugin) -> plugin.setVersion(this.description.getPlatformVersion().toString()));
-		build.plugins()
-			.add("io.spring.dependency-management", (plugin) -> plugin
-				.setVersion(this.versionResolver.resolveDependencyManagementPluginVersion(this.description)));
+		build.plugins().apply("io.spring.dependency-management");
 	}
 
 	@Override

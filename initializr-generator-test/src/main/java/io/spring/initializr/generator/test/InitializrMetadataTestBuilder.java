@@ -80,7 +80,7 @@ public class InitializrMetadataTestBuilder {
 	}
 
 	public InitializrMetadataTestBuilder addAllDefaults() {
-		return addBasicDefaults().setGradleEnv("1.0.6.RELEASE").setKotlinEnv("1.1.1");
+		return addBasicDefaults().setKotlinEnv("1.1.1");
 	}
 
 	public InitializrMetadataTestBuilder addBasicDefaults() {
@@ -205,14 +205,6 @@ public class InitializrMetadataTestBuilder {
 			platform.setV1FormatCompatibilityRange(v1Range);
 			platform.setV2FormatCompatibilityRange(v2Range);
 		});
-		return this;
-	}
-
-	public InitializrMetadataTestBuilder setGradleEnv(String dependencyManagementPluginVersion) {
-		this.builder.withCustomizer((it) -> it.getConfiguration()
-			.getEnv()
-			.getGradle()
-			.setDependencyManagementPluginVersion(dependencyManagementPluginVersion));
 		return this;
 	}
 

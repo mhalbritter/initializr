@@ -386,10 +386,12 @@ public class InitializrConfiguration {
 				this.dependencyManagementPluginVersion = other.dependencyManagementPluginVersion;
 			}
 
+			@Deprecated(forRemoval = true)
 			public String getDependencyManagementPluginVersion() {
 				return this.dependencyManagementPluginVersion;
 			}
 
+			@Deprecated(forRemoval = true)
 			public void setDependencyManagementPluginVersion(String dependencyManagementPluginVersion) {
 				this.dependencyManagementPluginVersion = dependencyManagementPluginVersion;
 			}

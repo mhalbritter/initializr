@@ -38,7 +38,6 @@ import io.spring.initializr.generator.project.ProjectDescription;
 import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
 import io.spring.initializr.generator.spring.build.BuildCustomizer;
 import io.spring.initializr.generator.spring.util.LambdaSafe;
-import io.spring.initializr.metadata.InitializrMetadata;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
@@ -114,10 +113,8 @@ public class GradleProjectGenerationConfiguration {
 
 	@Bean
 	@ConditionalOnGradleVersion({ "6", "7", "8" })
-	BuildCustomizer<GradleBuild> springBootPluginContributor(ProjectDescription description,
-			ObjectProvider<DependencyManagementPluginVersionResolver> versionResolver, InitializrMetadata metadata) {
-		return new SpringBootPluginBuildCustomizer(description, versionResolver
-			.getIfAvailable(() -> new InitializrDependencyManagementPluginVersionResolver(metadata)));
+	BuildCustomizer<GradleBuild> springBootPluginContributor(ProjectDescription description) {
+		return new SpringBootPluginBuildCustomizer(description);
 	}
 
 	@Bean
