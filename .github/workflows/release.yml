@@ -25,7 +25,7 @@ jobs:
         id: read-version
         shell: bash
         run: | 
-          version=$(sed -n 's/^.*<revision>\(.*\)<\/revision>/\1/p' pom.xml)
+          version=$(sed -n 's/^.*<revision>\(.*\)<\/revision>.*$/\1/p' pom.xml)
           echo "Version is $version"
           echo "version=$version" >> $GITHUB_OUTPUT
       - name: Stage Release
