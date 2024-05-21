@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,16 @@
 package io.spring.initializr.generator.spring.code.kotlin;
 
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
-import io.spring.initializr.generator.buildsystem.gradle.GradleTask;
 import io.spring.initializr.generator.spring.build.BuildCustomizer;
 
 /**
- * {@link BuildCustomizer} abstraction for Kotlin projects build with Gradle.
+ * {@link BuildCustomizer} for Kotlin projects build with Gradle.
  *
  * @author Andy Wilkinson
  * @author Jean-Baptiste Nizet
- * @see GroovyDslKotlinGradleBuildCustomizer
- * @see KotlinDslKotlinGradleBuildCustomizer
+ * @author Moritz Halbritter
  */
-abstract class KotlinGradleBuildCustomizer implements BuildCustomizer<GradleBuild> {
+class KotlinGradleBuildCustomizer implements BuildCustomizer<GradleBuild> {
 
 	private final KotlinProjectSettings settings;
 
@@ -41,11 +39,23 @@ abstract class KotlinGradleBuildCustomizer implements BuildCustomizer<GradleBuil
 		build.plugins().add("org.jetbrains.kotlin.jvm", (plugin) -> plugin.setVersion(this.settings.getVersion()));
 		build.plugins()
 			.add("org.jetbrains.kotlin.plugin.spring", (plugin) -> plugin.setVersion(this.settings.getVersion()));
-		build.tasks()
-			.customizeWithType("org.jetbrains.kotlin.gradle.tasks.KotlinCompile",
-					(compile) -> customizeKotlinOptions(this.settings, compile));
+		customizeCompilerOptions(build);
 	}
 
-	protected abstract void customizeKotlinOptions(KotlinProjectSettings settings, GradleTask.Builder compile);
+	private void customizeCompilerOptions(GradleBuild build) {
+		build.extensions().customize("kotlin", (kotlin) -> kotlin.nested("compilerOptions", (compilerOptions) -> {
+			compilerOptions.attributeWithType("jvmTarget", getJvmTarget(), "org.jetbrains.kotlin.gradle.dsl.JvmTarget");
+			for (String compilerArg : this.settings.getCompilerArgs()) {
+				compilerOptions.append("freeCompilerArgs", "'" + compilerArg + "'");
+			}
+		}));
+	}
+
+	private String getJvmTarget() {
+		return switch (this.settings.getJvmTarget()) {
+			case "1.8" -> "JvmTarget.JVM_1_8";
+			default -> "JvmTarget.JVM_" + this.settings.getJvmTarget();
+		};
+	}
 
 }
