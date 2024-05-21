@@ -34,7 +34,7 @@ class KotlinGradleBuildCustomizerTests {
 	@Test
 	void kotlinPluginsAreConfigured() {
 		GradleBuild build = new GradleBuild();
-		new KotlinGradleBuildCustomizer(new SimpleKotlinProjectSettings("1.2.70")).customize(build);
+		new KotlinGradleBuildCustomizer(new SimpleKotlinProjectSettings("1.2.70"), '"').customize(build);
 		assertThat(build.plugins().values()).extracting("id", "version")
 			.containsExactlyInAnyOrder(Tuple.tuple("org.jetbrains.kotlin.jvm", "1.2.70"),
 					Tuple.tuple("org.jetbrains.kotlin.plugin.spring", "1.2.70"));

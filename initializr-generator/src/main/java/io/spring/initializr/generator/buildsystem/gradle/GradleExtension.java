@@ -18,6 +18,7 @@ package io.spring.initializr.generator.buildsystem.gradle;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -164,6 +165,15 @@ public class GradleExtension {
 		 */
 		public void invoke(String target, String... arguments) {
 			this.invocations.add(new Invocation(target, Arrays.asList(arguments)));
+		}
+
+		/**
+		 * Invoke an extension method.
+		 * @param target the name of the method
+		 * @param arguments the arguments
+		 */
+		public void invoke(String target, Collection<String> arguments) {
+			this.invocations.add(new Invocation(target, List.copyOf(arguments)));
 		}
 
 		/**

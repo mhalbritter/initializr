@@ -16,8 +16,12 @@
 
 package io.spring.initializr.generator.spring.code.kotlin;
 
+import java.util.List;
+
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuild;
 import io.spring.initializr.generator.spring.build.BuildCustomizer;
+
+import org.springframework.util.CollectionUtils;
 
 /**
  * {@link BuildCustomizer} for Kotlin projects build with Gradle.
@@ -30,8 +34,11 @@ class KotlinGradleBuildCustomizer implements BuildCustomizer<GradleBuild> {
 
 	private final KotlinProjectSettings settings;
 
-	KotlinGradleBuildCustomizer(KotlinProjectSettings kotlinProjectSettings) {
+	private final char quote;
+
+	KotlinGradleBuildCustomizer(KotlinProjectSettings kotlinProjectSettings, char quote) {
 		this.settings = kotlinProjectSettings;
+		this.quote = quote;
 	}
 
 	@Override
@@ -45,17 +52,21 @@ class KotlinGradleBuildCustomizer implements BuildCustomizer<GradleBuild> {
 	private void customizeCompilerOptions(GradleBuild build) {
 		build.extensions().customize("kotlin", (kotlin) -> kotlin.nested("compilerOptions", (compilerOptions) -> {
 			compilerOptions.attributeWithType("jvmTarget", getJvmTarget(), "org.jetbrains.kotlin.gradle.dsl.JvmTarget");
-			for (String compilerArg : this.settings.getCompilerArgs()) {
-				compilerOptions.append("freeCompilerArgs", "'" + compilerArg + "'");
+			if (!CollectionUtils.isEmpty(this.settings.getCompilerArgs())) {
+				compilerOptions.invoke("freeCompilerArgs.addAll", quote(this.settings.getCompilerArgs()));
 			}
 		}));
 	}
 
+	private List<String> quote(List<String> compilerArgs) {
+		return compilerArgs.stream().map((element) -> this.quote + element + this.quote).toList();
+	}
+
 	private String getJvmTarget() {
-		return switch (this.settings.getJvmTarget()) {
-			case "1.8" -> "JvmTarget.JVM_1_8";
-			default -> "JvmTarget.JVM_" + this.settings.getJvmTarget();
-		};
+		if ("1.8".equals(this.settings.getJvmTarget())) {
+			return "JvmTarget.JVM_1_8";
+		}
+		return "JvmTarget.JVM_" + this.settings.getJvmTarget();
 	}
 
 }

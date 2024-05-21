@@ -80,9 +80,15 @@ class KotlinProjectGenerationDefaultContributorsConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnBuildSystem(GradleBuildSystem.ID)
-	KotlinGradleBuildCustomizer kotlinBuildCustomizer(KotlinProjectSettings kotlinProjectSettings) {
-		return new KotlinGradleBuildCustomizer(kotlinProjectSettings);
+	@ConditionalOnBuildSystem(value = GradleBuildSystem.ID, dialect = GradleBuildSystem.DIALECT_KOTLIN)
+	KotlinGradleBuildCustomizer kotlinBuildCustomizerKotlinDsl(KotlinProjectSettings kotlinProjectSettings) {
+		return new KotlinGradleBuildCustomizer(kotlinProjectSettings, '\"');
+	}
+
+	@Bean
+	@ConditionalOnBuildSystem(value = GradleBuildSystem.ID, dialect = GradleBuildSystem.DIALECT_GROOVY)
+	KotlinGradleBuildCustomizer kotlinBuildCustomizerGroovyDsl(KotlinProjectSettings kotlinProjectSettings) {
+		return new KotlinGradleBuildCustomizer(kotlinProjectSettings, '\'');
 	}
 
 	/**
