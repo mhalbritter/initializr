@@ -27,6 +27,7 @@ import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSettings.Bui
  *
  * @author Andy Wilkinson
  * @author Jean-Baptiste Nizet
+ * @author Moritz Halbritter
  */
 public class GradleBuild extends Build {
 
@@ -97,7 +98,7 @@ public class GradleBuild extends Build {
 	}
 
 	/**
-	 * Return the {@linkplain GradleExtensionContainer task container} to use to configure
+	 * Return the {@linkplain GradleExtensionContainer extension container} to use to configure
 	 * extensions.
 	 * @return the {@link GradleExtensionContainer}
 	 */

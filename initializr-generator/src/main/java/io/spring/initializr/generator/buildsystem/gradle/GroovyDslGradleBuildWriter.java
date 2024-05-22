@@ -33,6 +33,7 @@ import io.spring.initializr.generator.version.VersionReference;
  * A {@link GradleBuild} writer for {@code build.gradle}.
  *
  * @author Jean-Baptiste Nizet
+ * @author Moritz Halbritter
  */
 public class GroovyDslGradleBuildWriter extends GradleBuildWriter {
 

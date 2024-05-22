@@ -48,6 +48,7 @@ import io.spring.initializr.generator.version.VersionProperty;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Jean-Baptiste Nizet
+ * @author Moritz Halbritter
  * @see GroovyDslGradleBuildWriter
  * @see KotlinDslGradleBuildWriter
  */
