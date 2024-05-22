@@ -98,8 +98,8 @@ public class GradleBuild extends Build {
 	}
 
 	/**
-	 * Return the {@linkplain GradleExtensionContainer extension container} to use to configure
-	 * extensions.
+	 * Return the {@linkplain GradleExtensionContainer extension container} to use to
+	 * configure extensions.
 	 * @return the {@link GradleExtensionContainer}
 	 */
 	public GradleExtensionContainer extensions() {
