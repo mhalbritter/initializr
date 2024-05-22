@@ -47,10 +47,23 @@ public class GradleExtension {
 
 	protected GradleExtension(Builder builder) {
 		this.name = builder.name;
-		this.attributes = List.copyOf(builder.attributes);
+		this.attributes = List.copyOf(builder.attributes.values());
 		this.invocations = List.copyOf(builder.invocations);
 		this.nested = Collections.unmodifiableMap(resolve(builder.nested));
-		this.importedTypes = Collections.unmodifiableSet(builder.getImportedTypes());
+		this.importedTypes = collectImportedTypes(builder);
+	}
+
+	private static Set<String> collectImportedTypes(Builder builder) {
+		Set<String> result = new HashSet<>();
+		addImportedTypes(result, builder);
+		return Collections.unmodifiableSet(result);
+	}
+
+	private static void addImportedTypes(Set<String> importedTypes, Builder builder) {
+		importedTypes.addAll(builder.importedTypes);
+		for (Builder nested : builder.nested.values()) {
+			addImportedTypes(importedTypes, nested);
+		}
 	}
 
 	private static Map<String, GradleExtension> resolve(Map<String, Builder> extensions) {
@@ -106,7 +119,7 @@ public class GradleExtension {
 
 		private final String name;
 
-		private final List<Attribute> attributes = new ArrayList<>();
+		private final Map<String, Attribute> attributes = new LinkedHashMap<>();
 
 		private final List<Invocation> invocations = new ArrayList<>();
 
@@ -124,7 +137,7 @@ public class GradleExtension {
 		 * @param value the value
 		 */
 		public void attribute(String target, String value) {
-			this.attributes.add(Attribute.set(target, value));
+			this.attributes.put(target, Attribute.set(target, value));
 		}
 
 		/**
@@ -144,7 +157,7 @@ public class GradleExtension {
 		 * @param value the value to append
 		 */
 		public void append(String target, String value) {
-			this.attributes.add(Attribute.append(target, value));
+			this.attributes.put(target, Attribute.append(target, value));
 		}
 
 		/**
@@ -193,18 +206,6 @@ public class GradleExtension {
 		 */
 		public GradleExtension build() {
 			return new GradleExtension(this);
-		}
-
-		/**
-		 * Returns the imported types of this extension and all nested ones.
-		 * @return the imported types
-		 */
-		Set<String> getImportedTypes() {
-			Set<String> result = new HashSet<>(this.importedTypes);
-			for (Builder nested : this.nested.values()) {
-				result.addAll(nested.getImportedTypes());
-			}
-			return result;
 		}
 
 	}

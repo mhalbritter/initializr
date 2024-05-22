@@ -216,9 +216,9 @@ public abstract class GradleBuildWriter {
 	private void writeExtensionCustomization(IndentingWriter writer, GradleExtension extension) {
 		writeCollection(writer, extension.getInvocations(), this::invocationAsString);
 		writeCollection(writer, extension.getAttributes(), this::attributeAsString);
-		extension.getNested().forEach((property, nestedCustomization) -> {
-			writer.println(property + " {");
-			writer.indented(() -> writeExtensionCustomization(writer, nestedCustomization));
+		extension.getNested().forEach((ignored, nested) -> {
+			writer.println(nested.getName() + " {");
+			writer.indented(() -> writeExtensionCustomization(writer, nested));
 			writer.println("}");
 		});
 	}

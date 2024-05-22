@@ -596,17 +596,15 @@ class GroovyDslGradleBuildWriterTests extends GradleBuildWriterTests {
 		build.extensions().customize("kotlin", (kotlin) -> kotlin.nested("compilerOptions", (compilerOptions) -> {
 			compilerOptions.attributeWithType("jvmTarget", "JvmTarget.JVM_21",
 					"org.jetbrains.kotlin.gradle.dsl.JvmTarget");
-			compilerOptions.append("freeCompilerArgs", "'-Xjsr305=strict'");
-			compilerOptions.append("freeCompilerArgs", "'-Xexport-kdoc'");
+			compilerOptions.invoke("freeCompilerArgs.addAll", "'-Xjsr305=strict'", "'-Xexport-kdoc'");
 		}));
 		String written = write(build);
 		assertThat(written).contains("import org.jetbrains.kotlin.gradle.dsl.JvmTarget");
 		assertThat(written).contains("""
 				kotlin {
 					compilerOptions {
+						freeCompilerArgs.addAll '-Xjsr305=strict', '-Xexport-kdoc'
 						jvmTarget = JvmTarget.JVM_21
-						freeCompilerArgs += '-Xjsr305=strict'
-						freeCompilerArgs += '-Xexport-kdoc'
 					}
 				}""");
 	}
