@@ -17,6 +17,7 @@
 package io.spring.initializr.generator.project;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -24,6 +25,7 @@ import java.util.function.Supplier;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.util.ClassUtils;
 
 /**
  * Main entry point for project generation that processes a {@link ProjectDescription} by
@@ -118,13 +120,50 @@ public class ProjectGenerator {
 	 * Return the {@link ProjectGenerationConfiguration} class names that should be
 	 * considered. By default this method will load candidates using
 	 * {@link SpringFactoriesLoader} with {@link ProjectGenerationConfiguration}.
+	 * {@link ProjectGenerationConfigurationVetoer} loaded using
+	 * {@link SpringFactoriesLoader} can be used to veto the loading of a
+	 * {@link ProjectGenerationConfiguration}. If one vetoer vetoes againsg the
+	 * configuration, the configuration is excluded.
 	 * @param description the description of the project to generate
 	 * @return a list of candidate configurations
 	 */
 	@SuppressWarnings("deprecation")
 	protected List<String> getCandidateProjectGenerationConfigurations(ProjectDescription description) {
-		return SpringFactoriesLoader.loadFactoryNames(ProjectGenerationConfiguration.class,
+		List<String> candidates = SpringFactoriesLoader.loadFactoryNames(ProjectGenerationConfiguration.class,
 				getClass().getClassLoader());
+		ProjectGenerationConfigurationVetoer vetoer = getProjectGenerationConfigurationVetoer();
+		List<String> result = new ArrayList<>(candidates);
+		for (String candidate : candidates) {
+			Class<?> configurationClass = resolveClass(candidate);
+			if (configurationClass != null) {
+				if (vetoer.exclude(configurationClass)) {
+					result.remove(candidate);
+				}
+			}
+		}
+		return result;
+	}
+
+	private Class<?> resolveClass(String candidate) {
+		try {
+			return ClassUtils.forName(candidate, getClass().getClassLoader());
+		}
+		catch (ClassNotFoundException ex) {
+			return null;
+		}
+	}
+
+	private ProjectGenerationConfigurationVetoer getProjectGenerationConfigurationVetoer() {
+		List<ProjectGenerationConfigurationVetoer> vetoer = SpringFactoriesLoader
+			.loadFactories(ProjectGenerationConfigurationVetoer.class, getClass().getClassLoader());
+		// One vetoer to exclude is enough to exclude the configuration
+		return (configurationClass) -> {
+			boolean excluded = false;
+			for (ProjectGenerationConfigurationVetoer veto : vetoer) {
+				excluded = excluded || veto.exclude(configurationClass);
+			}
+			return excluded;
+		};
 	}
 
 	private void registerProjectDescription(ProjectGenerationContext context, ProjectDescription description) {
