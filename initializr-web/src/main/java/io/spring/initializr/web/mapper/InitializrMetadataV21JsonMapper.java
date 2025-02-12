@@ -45,6 +45,17 @@ public class InitializrMetadataV21JsonMapper extends InitializrMetadataV2JsonMap
 	 * Create a new instance.
 	 */
 	public InitializrMetadataV21JsonMapper() {
+		this(JsonNodeCustomizer.createDefault(), TemplateVariablesProvider.createDefault());
+	}
+
+	/**
+	 * Create a new instance.
+	 * @param parentCustomizer the customizer to customize the parent JSON node
+	 * @param templateVariablesProvider the template variables provider
+	 */
+	public InitializrMetadataV21JsonMapper(JsonNodeCustomizer parentCustomizer,
+			TemplateVariablesProvider templateVariablesProvider) {
+		super(parentCustomizer, templateVariablesProvider);
 		this.dependenciesVariables = new TemplateVariables(
 				new TemplateVariable("bootVersion", TemplateVariable.VariableType.REQUEST_PARAM));
 	}

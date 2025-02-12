@@ -29,6 +29,22 @@ import io.spring.initializr.generator.version.VersionRange;
  */
 public class InitializrMetadataV22JsonMapper extends InitializrMetadataV21JsonMapper {
 
+	/**
+	 * Create a new instance.
+	 */
+	public InitializrMetadataV22JsonMapper() {
+	}
+
+	/**
+	 * Create a new instance.
+	 * @param parentCustomizer the customizer to customize the parent JSON node
+	 * @param templateVariablesProvider the template variables provider
+	 */
+	public InitializrMetadataV22JsonMapper(JsonNodeCustomizer parentCustomizer,
+			TemplateVariablesProvider templateVariablesProvider) {
+		super(parentCustomizer, templateVariablesProvider);
+	}
+
 	@Override
 	protected String formatVersion(String versionId) {
 		return versionId;

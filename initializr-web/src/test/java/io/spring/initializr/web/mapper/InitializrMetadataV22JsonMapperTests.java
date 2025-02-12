@@ -23,11 +23,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.spring.initializr.generator.test.InitializrMetadataTestBuilder;
 import io.spring.initializr.metadata.Dependency;
 import io.spring.initializr.metadata.InitializrMetadata;
-import io.spring.initializr.metadata.Type;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.hateoas.TemplateVariable;
-import org.springframework.hateoas.TemplateVariables;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -79,18 +77,14 @@ class InitializrMetadataV22JsonMapperTests {
 
 	@Test
 	void shouldAllowCustomization() throws JsonProcessingException {
-		InitializrMetadataJsonMapper mapper = new InitializrMetadataV22JsonMapper() {
-			@Override
-			protected TemplateVariables getTemplateVariables(String uri, String appUrl, Type type) {
-				TemplateVariables templateVariables = super.getTemplateVariables(uri, appUrl, type);
-				return templateVariables.concat(TemplateVariable.requestParameter("testParameter"));
-			}
-
-			@Override
-			protected void customizeParent(ObjectNode parent, InitializrMetadata metadata) {
-				parent.put("testField", "testValue");
-			}
-		};
+		InitializrMetadataV2JsonMapper.JsonNodeCustomizer parentCustomizer = (node, metadata) -> node.put("testField",
+				"testValue");
+		InitializrMetadataV2JsonMapper.TemplateVariablesProvider templateVariablesProvider = type -> InitializrMetadataV2JsonMapper.TemplateVariablesProvider
+			.createDefault()
+			.getTemplateVariables(type)
+			.concat(TemplateVariable.requestParameter("testParameter"));
+		InitializrMetadataJsonMapper mapper = new InitializrMetadataV22JsonMapper(parentCustomizer,
+				templateVariablesProvider);
 		String json = mapper.write(
 				new InitializrMetadataTestBuilder().addType("id", true, "action", "build", "dialect", "format").build(),
 				"http://localhost");

@@ -55,24 +55,26 @@ public class InitializrMetadataV2JsonMapper implements InitializrMetadataJsonMap
 
 	private static final JsonNodeFactory nodeFactory = JsonNodeFactory.instance;
 
-	private final TemplateVariables templateVariables;
+	private final JsonNodeCustomizer parentCustomizer;
+
+	private final TemplateVariablesProvider templateVariablesProvider;
 
 	/**
 	 * Create a new instance.
 	 */
 	public InitializrMetadataV2JsonMapper() {
-		this.templateVariables = new TemplateVariables(
-				new TemplateVariable("dependencies", TemplateVariable.VariableType.REQUEST_PARAM),
-				new TemplateVariable("packaging", TemplateVariable.VariableType.REQUEST_PARAM),
-				new TemplateVariable("javaVersion", TemplateVariable.VariableType.REQUEST_PARAM),
-				new TemplateVariable("language", TemplateVariable.VariableType.REQUEST_PARAM),
-				new TemplateVariable("bootVersion", TemplateVariable.VariableType.REQUEST_PARAM),
-				new TemplateVariable("groupId", TemplateVariable.VariableType.REQUEST_PARAM),
-				new TemplateVariable("artifactId", TemplateVariable.VariableType.REQUEST_PARAM),
-				new TemplateVariable("version", TemplateVariable.VariableType.REQUEST_PARAM),
-				new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM),
-				new TemplateVariable("description", TemplateVariable.VariableType.REQUEST_PARAM),
-				new TemplateVariable("packageName", TemplateVariable.VariableType.REQUEST_PARAM));
+		this(JsonNodeCustomizer.createDefault(), TemplateVariablesProvider.createDefault());
+	}
+
+	/**
+	 * Create a new instance.
+	 * @param parentCustomizer the customizer to customize the parent JSON node
+	 * @param templateVariablesProvider the template variables provider
+	 */
+	public InitializrMetadataV2JsonMapper(JsonNodeCustomizer parentCustomizer,
+			TemplateVariablesProvider templateVariablesProvider) {
+		this.parentCustomizer = parentCustomizer;
+		this.templateVariablesProvider = templateVariablesProvider;
 	}
 
 	protected JsonNodeFactory nodeFactory() {
@@ -95,16 +97,8 @@ public class InitializrMetadataV2JsonMapper implements InitializrMetadataJsonMap
 		text(parent, metadata.getName());
 		text(parent, metadata.getDescription());
 		text(parent, metadata.getPackageName());
-		customizeParent(parent, metadata);
+		this.parentCustomizer.customizeParent(parent, metadata);
 		return parent.toString();
-	}
-
-	/**
-	 * Customizes the parent.
-	 * @param parent the parent
-	 * @param metadata the metadata
-	 */
-	protected void customizeParent(ObjectNode parent, InitializrMetadata metadata) {
 	}
 
 	protected ObjectNode links(ObjectNode parent, List<Type> types, String appUrl) {
@@ -124,12 +118,8 @@ public class InitializrMetadataV2JsonMapper implements InitializrMetadataJsonMap
 	protected String generateTemplatedUri(String appUrl, Type type) {
 		String uri = (appUrl != null) ? appUrl + type.getAction() : type.getAction();
 		uri = uri + "?type=" + type.getId();
-		UriTemplate uriTemplate = UriTemplate.of(uri, getTemplateVariables(uri, appUrl, type));
+		UriTemplate uriTemplate = UriTemplate.of(uri, this.templateVariablesProvider.getTemplateVariables(type));
 		return uriTemplate.toString();
-	}
-
-	protected TemplateVariables getTemplateVariables(String uri, String appUrl, Type type) {
-		return this.templateVariables;
 	}
 
 	protected void dependencies(ObjectNode parent, DependenciesCapability capability) {
@@ -250,6 +240,38 @@ public class InitializrMetadataV2JsonMapper implements InitializrMetadataJsonMap
 			result.put("description", ((Describable) value).getDescription());
 		}
 		return result;
+	}
+
+	public interface TemplateVariablesProvider {
+
+		TemplateVariables getTemplateVariables(Type type);
+
+		static TemplateVariablesProvider createDefault() {
+			return (type) -> new TemplateVariables(
+					new TemplateVariable("dependencies", TemplateVariable.VariableType.REQUEST_PARAM),
+					new TemplateVariable("packaging", TemplateVariable.VariableType.REQUEST_PARAM),
+					new TemplateVariable("javaVersion", TemplateVariable.VariableType.REQUEST_PARAM),
+					new TemplateVariable("language", TemplateVariable.VariableType.REQUEST_PARAM),
+					new TemplateVariable("bootVersion", TemplateVariable.VariableType.REQUEST_PARAM),
+					new TemplateVariable("groupId", TemplateVariable.VariableType.REQUEST_PARAM),
+					new TemplateVariable("artifactId", TemplateVariable.VariableType.REQUEST_PARAM),
+					new TemplateVariable("version", TemplateVariable.VariableType.REQUEST_PARAM),
+					new TemplateVariable("name", TemplateVariable.VariableType.REQUEST_PARAM),
+					new TemplateVariable("description", TemplateVariable.VariableType.REQUEST_PARAM),
+					new TemplateVariable("packageName", TemplateVariable.VariableType.REQUEST_PARAM));
+		}
+
+	}
+
+	public interface JsonNodeCustomizer {
+
+		void customizeParent(ObjectNode node, InitializrMetadata metadata);
+
+		static JsonNodeCustomizer createDefault() {
+			return (node, metadata) -> {
+			};
+		}
+
 	}
 
 }
