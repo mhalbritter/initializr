@@ -37,7 +37,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.skyscreamer.jsonassert.comparator.CustomComparator;
 
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -125,7 +125,7 @@ class ProjectGenerationStatPublisherTests {
 		properties.getElastic().setUri("https://example.com/test/");
 		configureService(properties);
 		testAuthorization("https://example.com/test/initializr/_doc/",
-				(request) -> assertThat(request.getHeaders().containsKey("Authorization")).isFalse());
+				(request) -> assertThat(request.getHeaders().containsHeader("Authorization")).isFalse());
 	}
 
 	private void testAuthorization(String expectedUri, RequestMatcher authorizationMatcher) {

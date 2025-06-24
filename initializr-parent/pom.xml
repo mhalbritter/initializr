@@ -35,8 +35,8 @@
 		<commons-text.version>1.12.0</commons-text.version>
 		<maven.version>3.9.6</maven.version>
 		<maven-resolver.version>1.9.20</maven-resolver.version>
-		<spring-boot.version>3.5.3</spring-boot.version>
-		<spring-cloud-contract.version>4.2.0</spring-cloud-contract.version>
+		<spring-boot.version>4.0.0-restructure-SNAPSHOT</spring-boot.version>
+		<spring-cloud-contract.version>5.0.0-SNAPSHOT</spring-cloud-contract.version>
 	</properties>
 	<scm>
 		<url>${git.url}</url>
@@ -273,5 +273,42 @@
 			</build>
 		</profile>
 	</profiles>
+
+	<repositories>
+		<repository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>spring-snapshots</id>
+			<name>Spring Snapshots</name>
+			<url>https://repo.spring.io/snapshot</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>spring-snapshots</id>
+			<name>Spring Snapshots</name>
+			<url>https://repo.spring.io/snapshot</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</pluginRepository>
+	</pluginRepositories>
 
 </project>
