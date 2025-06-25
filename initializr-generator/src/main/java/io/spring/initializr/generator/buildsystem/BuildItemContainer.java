@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * A container for items.
  *
@@ -77,7 +79,7 @@ public class BuildItemContainer<I, V> {
 	 * @param id the id of an item
 	 * @return the item or {@code null}
 	 */
-	public V get(I id) {
+	public @Nullable V get(I id) {
 		return this.items.get(id);
 	}
 

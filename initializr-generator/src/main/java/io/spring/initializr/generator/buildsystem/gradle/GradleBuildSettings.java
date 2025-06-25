@@ -21,6 +21,7 @@ import java.util.List;
 
 import io.spring.initializr.generator.buildsystem.BuildSettings;
 import io.spring.initializr.generator.buildsystem.Dependency;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Gradle-specific {@linkplain BuildSettings build settings}.
@@ -29,7 +30,7 @@ import io.spring.initializr.generator.buildsystem.Dependency;
  */
 public class GradleBuildSettings extends BuildSettings {
 
-	private final String sourceCompatibility;
+	private final @Nullable String sourceCompatibility;
 
 	private final List<PluginMapping> pluginMappings;
 
@@ -41,9 +42,9 @@ public class GradleBuildSettings extends BuildSettings {
 
 	/**
 	 * Return the java version compatibility to use when compiling Java source.
-	 * @return the java version to use for source.
+	 * @return the java version to use for source or {@code null}.
 	 */
-	public String getSourceCompatibility() {
+	public @Nullable String getSourceCompatibility() {
 		return this.sourceCompatibility;
 	}
 
@@ -60,7 +61,7 @@ public class GradleBuildSettings extends BuildSettings {
 	 */
 	public static class Builder extends BuildSettings.Builder<Builder> {
 
-		private String sourceCompatibility;
+		private @Nullable String sourceCompatibility;
 
 		private final List<PluginMapping> pluginMappings = new ArrayList<>();
 
@@ -69,7 +70,7 @@ public class GradleBuildSettings extends BuildSettings {
 		 * @param sourceCompatibility java version compatibility
 		 * @return this for method chaining
 		 */
-		public Builder sourceCompatibility(String sourceCompatibility) {
+		public Builder sourceCompatibility(@Nullable String sourceCompatibility) {
 			this.sourceCompatibility = sourceCompatibility;
 			return self();
 		}

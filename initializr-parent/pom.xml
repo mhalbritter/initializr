@@ -190,7 +190,7 @@
 							<arg>-Xlint:-processing</arg>
                             <arg>--should-stop=ifError=FLOW</arg>
                             <arg>-XDcompilePolicy=simple</arg>
-                            <arg>-Xplugin:ErrorProne -XepDisableAllChecks -Xep:NullAway:ERROR -XepOpt:NullAway:OnlyNullMarked=true -XepOpt:NullAway:CustomContractAnnotations=org.springframework.lang.Contract</arg>
+                            <arg>-Xplugin:ErrorProne -XepDisableAllChecks -Xep:NullAway:ERROR -XepOpt:NullAway:OnlyNullMarked=true -XepOpt:NullAway:CustomContractAnnotations=org.springframework.lang.Contract -XepOpt:NullAway:HandleTestAssertionLibraries=true</arg>
 						</compilerArgs>
 						<annotationProcessorPaths>
                             <path>

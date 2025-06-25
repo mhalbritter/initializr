@@ -17,6 +17,7 @@
 package io.spring.initializr.generator.buildsystem;
 
 import io.spring.initializr.generator.version.VersionReference;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A Bill of Materials (BOM) definition to be declared in a project's build configuration.
@@ -29,7 +30,7 @@ public class BillOfMaterials {
 
 	private final String artifactId;
 
-	private final VersionReference version;
+	private final @Nullable VersionReference version;
 
 	private final int order;
 
@@ -69,9 +70,9 @@ public class BillOfMaterials {
 	/**
 	 * Return the {@linkplain VersionReference version reference} of the bom. Can be a
 	 * fixed value or refer to a property.
-	 * @return the version reference
+	 * @return the version reference or {@code null}
 	 */
-	public VersionReference getVersion() {
+	public @Nullable VersionReference getVersion() {
 		return this.version;
 	}
 
@@ -92,7 +93,7 @@ public class BillOfMaterials {
 
 		private String artifactId;
 
-		private VersionReference version;
+		private @Nullable VersionReference version;
 
 		private int order = Integer.MAX_VALUE;
 

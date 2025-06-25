@@ -28,6 +28,7 @@ import io.spring.initializr.generator.buildsystem.MavenRepository;
 import io.spring.initializr.generator.io.IndentingWriter;
 import io.spring.initializr.generator.version.VersionProperty;
 import io.spring.initializr.generator.version.VersionReference;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A {@link GradleBuild} writer for {@code build.gradle}.
@@ -158,7 +159,7 @@ public class GroovyDslGradleBuildWriter extends GradleBuildWriter {
 		return "exclude group: '" + exclusion.getGroupId() + "', module: '" + exclusion.getArtifactId() + "'";
 	}
 
-	private String determineQuoteStyle(VersionReference versionReference) {
+	private String determineQuoteStyle(@Nullable VersionReference versionReference) {
 		return (versionReference != null && versionReference.isProperty()) ? "\"" : "'";
 	}
 
@@ -169,7 +170,7 @@ public class GroovyDslGradleBuildWriter extends GradleBuildWriter {
 				+ determineVersion(bom.getVersion()) + quoteStyle;
 	}
 
-	private String determineVersion(VersionReference versionReference) {
+	private @Nullable String determineVersion(@Nullable VersionReference versionReference) {
 		if (versionReference != null) {
 			if (versionReference.isProperty()) {
 				VersionProperty property = versionReference.getProperty();
@@ -205,7 +206,7 @@ public class GroovyDslGradleBuildWriter extends GradleBuildWriter {
 	}
 
 	@Override
-	protected void writeProperty(IndentingWriter writer, String name, String value) {
+	protected void writeProperty(IndentingWriter writer, String name, @Nullable String value) {
 		if (value != null) {
 			writer.println(String.format("%s = '%s'", name, value));
 		}
