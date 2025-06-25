@@ -37,6 +37,8 @@
 		<maven-resolver.version>1.9.20</maven-resolver.version>
 		<spring-boot.version>4.0.0-SNAPSHOT</spring-boot.version>
 		<spring-cloud-contract.version>5.0.0-SNAPSHOT</spring-cloud-contract.version>
+		<error-prone.version>2.39.0</error-prone.version>
+		<nullaway.version>0.12.7</nullaway.version>
 	</properties>
 	<scm>
 		<url>${git.url}</url>
@@ -186,7 +188,26 @@
 						<compilerArgs>
 							<arg>-Xlint:all</arg>
 							<arg>-Xlint:-processing</arg>
+                            <arg>--should-stop=ifError=FLOW</arg>
+                            <arg>-XDcompilePolicy=simple</arg>
+                            <arg>-Xplugin:ErrorProne -XepDisableAllChecks -Xep:NullAway:ERROR -XepOpt:NullAway:OnlyNullMarked=true -XepOpt:NullAway:CustomContractAnnotations=org.springframework.lang.Contract</arg>
 						</compilerArgs>
+						<annotationProcessorPaths>
+                            <path>
+                                <groupId>com.google.errorprone</groupId>
+                                <artifactId>error_prone_core</artifactId>
+                                <version>${error-prone.version}</version>
+                            </path>
+							<path>
+								<groupId>com.uber.nullaway</groupId>
+								<artifactId>nullaway</artifactId>
+								<version>${nullaway.version}</version>
+							</path>
+                            <path>
+                                <groupId>org.springframework.boot</groupId>
+                                <artifactId>spring-boot-configuration-processor</artifactId>
+                            </path>
+						</annotationProcessorPaths>
 					</configuration>
 				</plugin>
 				<plugin>
