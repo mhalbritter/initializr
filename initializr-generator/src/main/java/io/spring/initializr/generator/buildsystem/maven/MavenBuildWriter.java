@@ -47,6 +47,7 @@ import io.spring.initializr.generator.buildsystem.maven.MavenPlugin.Setting;
 import io.spring.initializr.generator.io.IndentingWriter;
 import io.spring.initializr.generator.version.VersionProperty;
 import io.spring.initializr.generator.version.VersionReference;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -308,7 +309,7 @@ public class MavenBuildWriter {
 		});
 	}
 
-	private String scopeForType(DependencyScope type) {
+	private @Nullable String scopeForType(@Nullable DependencyScope type) {
 		if (type == null) {
 			return null;
 		}
@@ -347,7 +348,7 @@ public class MavenBuildWriter {
 		});
 	}
 
-	private String determineVersion(VersionReference versionReference) {
+	private @Nullable String determineVersion(@Nullable VersionReference versionReference) {
 		if (versionReference == null) {
 			return null;
 		}
@@ -435,7 +436,7 @@ public class MavenBuildWriter {
 		});
 	}
 
-	private void writePluginConfiguration(IndentingWriter writer, Configuration configuration) {
+	private void writePluginConfiguration(IndentingWriter writer, @Nullable Configuration configuration) {
 		if (configuration == null || configuration.getSettings().isEmpty()) {
 			return;
 		}
@@ -626,7 +627,7 @@ public class MavenBuildWriter {
 		});
 	}
 
-	private void writeSingleElement(IndentingWriter writer, String name, Object value) {
+	private void writeSingleElement(IndentingWriter writer, String name, @Nullable Object value) {
 		if (value != null) {
 			CharSequence text = (value instanceof CharSequence) ? (CharSequence) value : value.toString();
 			if (!StringUtils.hasLength(text)) {
@@ -669,7 +670,7 @@ public class MavenBuildWriter {
 		}
 	}
 
-	private <T> void ifNotNull(T value, Consumer<T> elementWriter) {
+	private <T> void ifNotNull(@Nullable T value, Consumer<T> elementWriter) {
 		if (value != null) {
 			elementWriter.accept(value);
 		}

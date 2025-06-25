@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 
 import io.spring.initializr.generator.buildsystem.BuildSettings;
 import io.spring.initializr.generator.packaging.Packaging;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Maven {@link BuildSettings}.
@@ -33,13 +34,13 @@ import io.spring.initializr.generator.packaging.Packaging;
  */
 public class MavenBuildSettings extends BuildSettings {
 
-	private final MavenParent parent;
+	private @Nullable final MavenParent parent;
 
-	private final String packaging;
+	private @Nullable final String packaging;
 
-	private final String name;
+	private @Nullable final String name;
 
-	private final String description;
+	private @Nullable final String description;
 
 	private final List<MavenLicense> licenses;
 
@@ -47,15 +48,15 @@ public class MavenBuildSettings extends BuildSettings {
 
 	private final MavenScm scm;
 
-	private final String defaultGoal;
+	private @Nullable final String defaultGoal;
 
-	private final String finalName;
+	private @Nullable final String finalName;
 
-	private final String sourceDirectory;
+	private @Nullable final String sourceDirectory;
 
-	private final String testSourceDirectory;
+	private @Nullable final String testSourceDirectory;
 
-	private final String url;
+	private @Nullable final String url;
 
 	private final boolean addOverrideIfEmpty;
 
@@ -85,16 +86,16 @@ public class MavenBuildSettings extends BuildSettings {
 	 * parent.
 	 * @return the parent pom or {@code null}
 	 */
-	public MavenParent getParent() {
+	public @Nullable MavenParent getParent() {
 		return this.parent;
 	}
 
 	/**
 	 * Return the {@code packaging} to use or {@code null} to use the default {@code jar}
 	 * packaging.
-	 * @return the packaging to use
+	 * @return the packaging to use or {@code null}
 	 */
-	public String getPackaging() {
+	public @Nullable String getPackaging() {
 		return this.packaging;
 	}
 
@@ -102,7 +103,7 @@ public class MavenBuildSettings extends BuildSettings {
 	 * Return a simple name for the project.
 	 * @return the name of the project or {@code null}
 	 */
-	public String getName() {
+	public @Nullable String getName() {
 		return this.name;
 	}
 
@@ -110,7 +111,7 @@ public class MavenBuildSettings extends BuildSettings {
 	 * Return a human readable description of the project.
 	 * @return the description of the project or {@code null}
 	 */
-	public String getDescription() {
+	public @Nullable String getDescription() {
 		return this.description;
 	}
 
@@ -142,7 +143,7 @@ public class MavenBuildSettings extends BuildSettings {
 	 * Return the default goal or phase to execute if none is given.
 	 * @return the default goal or {@code null} to use the default
 	 */
-	public String getDefaultGoal() {
+	public @Nullable String getDefaultGoal() {
 		return this.defaultGoal;
 	}
 
@@ -150,7 +151,7 @@ public class MavenBuildSettings extends BuildSettings {
 	 * Return the final name of the artifact.
 	 * @return the final name or {@code null} to use the default
 	 */
-	public String getFinalName() {
+	public @Nullable String getFinalName() {
 		return this.finalName;
 	}
 
@@ -159,7 +160,7 @@ public class MavenBuildSettings extends BuildSettings {
 	 * {@code ${basedir}}.
 	 * @return the location of main source code or {@code null} to use the default
 	 */
-	public String getSourceDirectory() {
+	public @Nullable String getSourceDirectory() {
 		return this.sourceDirectory;
 	}
 
@@ -168,15 +169,15 @@ public class MavenBuildSettings extends BuildSettings {
 	 * {@code ${basedir}}.
 	 * @return the location of test source code or {@code null} to use the default
 	 */
-	public String getTestSourceDirectory() {
+	public @Nullable String getTestSourceDirectory() {
 		return this.testSourceDirectory;
 	}
 
 	/**
 	 * The URL to the project.
-	 * @return the url to the project
+	 * @return the url to the project or {@code null}
 	 */
-	public String getUrl() {
+	public @Nullable String getUrl() {
 		return this.url;
 	}
 
@@ -194,13 +195,13 @@ public class MavenBuildSettings extends BuildSettings {
 	 */
 	public static class Builder extends BuildSettings.Builder<Builder> {
 
-		private MavenParent parent;
+		private @Nullable MavenParent parent;
 
-		private String packaging;
+		private @Nullable String packaging;
 
-		private String name;
+		private @Nullable String name;
 
-		private String description;
+		private @Nullable String description;
 
 		private List<MavenLicense> licenses = new ArrayList<>();
 
@@ -208,15 +209,15 @@ public class MavenBuildSettings extends BuildSettings {
 
 		private final MavenScm.Builder scm = new MavenScm.Builder();
 
-		private String defaultGoal;
+		private @Nullable String defaultGoal;
 
-		private String finalName;
+		private @Nullable String finalName;
 
-		private String sourceDirectory;
+		private @Nullable String sourceDirectory;
 
-		private String testSourceDirectory;
+		private @Nullable String testSourceDirectory;
 
-		private String url;
+		private @Nullable String url;
 
 		private boolean addOverrideIfEmpty;
 
@@ -259,7 +260,7 @@ public class MavenBuildSettings extends BuildSettings {
 		 * @param relativePath the relative path
 		 * @return this for method chaining
 		 */
-		public Builder parent(String groupId, String artifactId, String version, String relativePath) {
+		public Builder parent(String groupId, String artifactId, String version, @Nullable String relativePath) {
 			this.parent = new MavenParent(groupId, artifactId, version, relativePath);
 			return self();
 		}
@@ -301,7 +302,7 @@ public class MavenBuildSettings extends BuildSettings {
 		 * @return this for method chaining
 		 */
 		public Builder licenses(MavenLicense... licenses) {
-			this.licenses = (licenses != null) ? Arrays.asList(licenses) : new ArrayList<>();
+			this.licenses = Arrays.asList(licenses);
 			return self();
 		}
 
@@ -311,7 +312,7 @@ public class MavenBuildSettings extends BuildSettings {
 		 * @return this for method chaining
 		 */
 		public Builder developers(MavenDeveloper... developers) {
-			this.developers = (developers != null) ? Arrays.asList(developers) : new ArrayList<>();
+			this.developers = Arrays.asList(developers);
 			return self();
 		}
 

@@ -16,6 +16,8 @@
 
 package io.spring.initializr.generator.buildsystem.maven;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * A version control section of a {@link MavenBuild}.
  *
@@ -23,13 +25,13 @@ package io.spring.initializr.generator.buildsystem.maven;
  */
 public class MavenScm {
 
-	private final String connection;
+	private final @Nullable String connection;
 
-	private final String developerConnection;
+	private final @Nullable String developerConnection;
 
-	private final String tag;
+	private final @Nullable String tag;
 
-	private final String url;
+	private final @Nullable String url;
 
 	MavenScm(Builder builder) {
 		this.connection = builder.connection;
@@ -45,9 +47,9 @@ public class MavenScm {
 	/**
 	 * Return the source control management system URL that describes the repository and
 	 * how to connect to the repository.
-	 * @return the source control management system URL
+	 * @return the source control management system URL or {@code null}
 	 */
-	public String getConnection() {
+	public @Nullable String getConnection() {
 		return this.connection;
 	}
 
@@ -55,37 +57,37 @@ public class MavenScm {
 	 *
 	 * Just like <code>connection</code>, but for developers, i.e. this scm connection
 	 * will not be read only.
-	 * @return the source control management system URL for developers
+	 * @return the source control management system URL for developers or {@code null}
 	 */
-	public String getDeveloperConnection() {
+	public @Nullable String getDeveloperConnection() {
 		return this.developerConnection;
 	}
 
 	/**
 	 * The tag of current code. By default, it's set to HEAD during development.
-	 * @return the tag of current code
+	 * @return the tag of current code or {@code null}
 	 */
-	public String getTag() {
+	public @Nullable String getTag() {
 		return this.tag;
 	}
 
 	/**
 	 * The URL to the project's browsable SCM repository.
-	 * @return the URL to the project's browsable SCM repository
+	 * @return the URL to the project's browsable SCM repository or {@code null}
 	 */
-	public String getUrl() {
+	public @Nullable String getUrl() {
 		return this.url;
 	}
 
 	public static class Builder {
 
-		private String connection;
+		private @Nullable String connection;
 
-		private String developerConnection;
+		private @Nullable String developerConnection;
 
-		private String tag;
+		private @Nullable String tag;
 
-		private String url;
+		private @Nullable String url;
 
 		/**
 		 * Specify the source control management system URL that describes the repository

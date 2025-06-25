@@ -18,6 +18,8 @@ package io.spring.initializr.generator.buildsystem.maven;
 
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Maven {@code <distributionManagement>} section.
  *
@@ -26,7 +28,7 @@ import java.util.function.Consumer;
  */
 public class MavenDistributionManagement {
 
-	private final String downloadUrl;
+	private final @Nullable String downloadUrl;
 
 	private final DeploymentRepository repository;
 
@@ -55,9 +57,9 @@ public class MavenDistributionManagement {
 
 	/**
 	 * Return the URL where this project can be downloaded from.
-	 * @return the URL of the project's download page
+	 * @return the URL of the project's download page or {@code null}
 	 */
-	public String getDownloadUrl() {
+	public @Nullable String getDownloadUrl() {
 		return this.downloadUrl;
 	}
 
@@ -101,7 +103,7 @@ public class MavenDistributionManagement {
 	 */
 	public static class Builder {
 
-		private String downloadUrl;
+		private @Nullable String downloadUrl;
 
 		private final DeploymentRepository.Builder repository = new DeploymentRepository.Builder();
 
@@ -177,15 +179,15 @@ public class MavenDistributionManagement {
 	 */
 	public static class DeploymentRepository {
 
-		private final String id;
+		private final @Nullable String id;
 
-		private final String name;
+		private final @Nullable String name;
 
-		private final String url;
+		private final @Nullable String url;
 
-		private final String layout;
+		private final @Nullable String layout;
 
-		private final Boolean uniqueVersion;
+		private final @Nullable Boolean uniqueVersion;
 
 		DeploymentRepository(Builder builder) {
 			this.id = builder.id;
@@ -206,42 +208,42 @@ public class MavenDistributionManagement {
 
 		/**
 		 * Return the identifier of the repository.
-		 * @return the repository ID
+		 * @return the repository ID or {@code null}
 		 */
-		public String getId() {
+		public @Nullable String getId() {
 			return this.id;
 		}
 
 		/**
 		 * Return the name of the repository.
-		 * @return the repository name
+		 * @return the repository name or {@code null}
 		 */
-		public String getName() {
+		public @Nullable String getName() {
 			return this.name;
 		}
 
 		/**
 		 * Return the url of the repository to use to upload artifacts.
-		 * @return the repository url
+		 * @return the repository url or {@code null}
 		 */
-		public String getUrl() {
+		public @Nullable String getUrl() {
 			return this.url;
 		}
 
 		/**
 		 * Return the repository layout. Can be {@code default} or {@code legacy}.
-		 * @return the repository layout
+		 * @return the repository layout or {@code null}
 		 */
-		public String getLayout() {
+		public @Nullable String getLayout() {
 			return this.layout;
 		}
 
 		/**
 		 * Return whether to assign snapshots a unique version comprised of the timestamp
 		 * and build number, or to use the same version each time.
-		 * @return {@code true} to assign each snapshot a unique version
+		 * @return {@code true} to assign each snapshot a unique version or {@code null}
 		 */
-		public Boolean getUniqueVersion() {
+		public @Nullable Boolean getUniqueVersion() {
 			return this.uniqueVersion;
 		}
 
@@ -250,15 +252,15 @@ public class MavenDistributionManagement {
 		 */
 		public static class Builder {
 
-			private String id;
+			private @Nullable String id;
 
-			private String name;
+			private @Nullable String name;
 
-			private String url;
+			private @Nullable String url;
 
-			private String layout;
+			private @Nullable String layout;
 
-			private Boolean uniqueVersion;
+			private @Nullable Boolean uniqueVersion;
 
 			/**
 			 * Set the id of the repository.
@@ -331,11 +333,11 @@ public class MavenDistributionManagement {
 	 */
 	public static class Site {
 
-		private final String id;
+		private final @Nullable String id;
 
-		private final String name;
+		private final @Nullable String name;
 
-		private final String url;
+		private final @Nullable String url;
 
 		Site(Builder builder) {
 			this.id = builder.id;
@@ -353,25 +355,25 @@ public class MavenDistributionManagement {
 
 		/**
 		 * Return the identifier of the repository.
-		 * @return the repository ID
+		 * @return the repository ID or {@code null}
 		 */
-		public String getId() {
+		public @Nullable String getId() {
 			return this.id;
 		}
 
 		/**
 		 * Return the name of the repository.
-		 * @return the repository name
+		 * @return the repository name or {@code null}
 		 */
-		public String getName() {
+		public @Nullable String getName() {
 			return this.name;
 		}
 
 		/**
 		 * Return the url of the repository to use to upload the site.
-		 * @return the repository url
+		 * @return the repository url or {@code null}
 		 */
-		public String getUrl() {
+		public @Nullable String getUrl() {
 			return this.url;
 		}
 
@@ -380,11 +382,11 @@ public class MavenDistributionManagement {
 		 */
 		public static class Builder {
 
-			private String id;
+			private @Nullable String id;
 
-			private String name;
+			private @Nullable String name;
 
-			private String url;
+			private @Nullable String url;
 
 			/**
 			 * Set the id of the repository.
@@ -435,13 +437,13 @@ public class MavenDistributionManagement {
 	 */
 	public static class Relocation {
 
-		private final String groupId;
+		private final @Nullable String groupId;
 
-		private final String artifactId;
+		private final @Nullable String artifactId;
 
-		private final String version;
+		private final @Nullable String version;
 
-		private final String message;
+		private final @Nullable String message;
 
 		Relocation(Builder builder) {
 			this.groupId = builder.groupId;
@@ -460,33 +462,33 @@ public class MavenDistributionManagement {
 
 		/**
 		 * Return the new group ID of the dependency.
-		 * @return the relocated group ID
+		 * @return the relocated group ID or {@code null}
 		 */
-		public String getGroupId() {
+		public @Nullable String getGroupId() {
 			return this.groupId;
 		}
 
 		/**
 		 * Return the new artifact ID of the dependency.
-		 * @return the relocated artifact ID
+		 * @return the relocated artifact ID or {@code null}
 		 */
-		public String getArtifactId() {
+		public @Nullable String getArtifactId() {
 			return this.artifactId;
 		}
 
 		/**
 		 * Return the new version of the dependency.
-		 * @return the relocated version
+		 * @return the relocated version or {@code null}
 		 */
-		public String getVersion() {
+		public @Nullable String getVersion() {
 			return this.version;
 		}
 
 		/**
 		 * Return a message that provides more details about the relocation.
-		 * @return the relocation message
+		 * @return the relocation message or {@code null}
 		 */
-		public String getMessage() {
+		public @Nullable String getMessage() {
 			return this.message;
 		}
 
@@ -495,13 +497,13 @@ public class MavenDistributionManagement {
 		 */
 		public static class Builder {
 
-			private String groupId;
+			private @Nullable String groupId;
 
-			private String artifactId;
+			private @Nullable String artifactId;
 
-			private String version;
+			private @Nullable String version;
 
-			private String message;
+			private @Nullable String message;
 
 			/**
 			 * Specify the new group ID of the dependency.

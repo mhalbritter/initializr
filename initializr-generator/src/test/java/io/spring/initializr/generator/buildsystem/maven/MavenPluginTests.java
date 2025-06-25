@@ -38,6 +38,7 @@ class MavenPluginTests {
 			.configuration((configuration) -> configuration.add("enabled", "false").add("skip", "true"))
 			.configuration((configuration) -> configuration.add("another", "test"))
 			.build();
+		assertThat(plugin.getConfiguration()).isNotNull();
 		assertThat(plugin.getConfiguration().getSettings().stream().map(Setting::getName)).containsExactly("enabled",
 				"skip", "another");
 		assertThat(plugin.getConfiguration().getSettings().stream().map(Setting::getValue)).containsExactly("false",
@@ -50,6 +51,7 @@ class MavenPluginTests {
 			.configuration((configuration) -> configuration.add("enabled", "true"))
 			.configuration((configuration) -> configuration.add("skip", "false"))
 			.build();
+		assertThat(plugin.getConfiguration()).isNotNull();
 		assertThat(plugin.getConfiguration().getSettings().stream().map(Setting::getName)).containsExactly("enabled",
 				"skip");
 		assertThat(plugin.getConfiguration().getSettings().stream().map(Setting::getValue)).containsExactly("true",
@@ -65,6 +67,7 @@ class MavenPluginTests {
 				items.add("item", (secondItem) -> secondItem.add("name", "two"));
 			}))
 			.build();
+		assertThat(plugin.getConfiguration()).isNotNull();
 		assertThat(plugin.getConfiguration().getSettings()).hasSize(1);
 		Setting setting = plugin.getConfiguration().getSettings().get(0);
 		assertThat(setting.getName()).isEqualTo("items");
@@ -93,6 +96,7 @@ class MavenPluginTests {
 			.configuration((configuration) -> configuration.configure("items", (items) -> items.add("item", "one")))
 			.configuration((configuration) -> configuration.configure("items", (items) -> items.add("item", "two")))
 			.build();
+		assertThat(plugin.getConfiguration()).isNotNull();
 		assertThat(plugin.getConfiguration().getSettings()).hasSize(1);
 		Setting setting = plugin.getConfiguration().getSettings().get(0);
 		assertThat(setting.getName()).isEqualTo("items");
@@ -112,6 +116,7 @@ class MavenPluginTests {
 					(items) -> items.configure("item",
 							(subItems) -> subItems.add("subItem", "two").add("subItem", "three"))))
 			.build();
+		assertThat(plugin.getConfiguration()).isNotNull();
 		assertThat(plugin.getConfiguration().getSettings()).hasSize(1);
 		Setting setting = plugin.getConfiguration().getSettings().get(0);
 		assertThat(setting.getName()).isEqualTo("items");
@@ -164,7 +169,9 @@ class MavenPluginTests {
 					(test) -> test.configuration((testConfiguration) -> testConfiguration.add("another", "test")))
 			.build();
 		assertThat(plugin.getExecutions()).hasSize(1);
-		List<Setting> settings = plugin.getExecutions().get(0).getConfiguration().getSettings();
+		MavenPlugin.Configuration configuration = plugin.getExecutions().get(0).getConfiguration();
+		assertThat(configuration).isNotNull();
+		List<Setting> settings = configuration.getSettings();
 		assertThat(settings.stream().map(Setting::getName)).containsExactly("enabled", "another");
 		assertThat(settings.stream().map(Setting::getValue)).containsExactly("true", "test");
 	}
