@@ -125,7 +125,7 @@ class ProjectGenerationStatPublisherTests {
 		properties.getElastic().setUri("https://example.com/test/");
 		configureService(properties);
 		testAuthorization("https://example.com/test/initializr/_doc/",
-				(request) -> assertThat(request.getHeaders().containsKey("Authorization")).isFalse());
+				(request) -> assertThat(request.getHeaders().containsHeader("Authorization")).isFalse());
 	}
 
 	private void testAuthorization(String expectedUri, RequestMatcher authorizationMatcher) {
