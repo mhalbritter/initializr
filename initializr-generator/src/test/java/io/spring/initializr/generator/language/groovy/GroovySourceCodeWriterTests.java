@@ -167,7 +167,7 @@ class GroovySourceCodeWriterTests {
 		GroovySourceCode sourceCode = new GroovySourceCode();
 		GroovyCompilationUnit compilationUnit = sourceCode.createCompilationUnit("com.example", "Test");
 		GroovyTypeDeclaration test = compilationUnit.createTypeDeclaration("Test");
-		test.annotations().add(ClassName.of("org.springframework.boot.autoconfigure.SpringBootApplication"));
+		test.annotations().addSingle(ClassName.of("org.springframework.boot.autoconfigure.SpringBootApplication"));
 		test.addMethodDeclaration(GroovyMethodDeclaration.method("main")
 			.modifiers(Modifier.PUBLIC | Modifier.STATIC)
 			.returning("void")
@@ -244,7 +244,7 @@ class GroovySourceCodeWriterTests {
 		GroovyCompilationUnit compilationUnit = sourceCode.createCompilationUnit("com.example", "Test");
 		GroovyTypeDeclaration test = compilationUnit.createTypeDeclaration("Test");
 		GroovyFieldDeclaration field = GroovyFieldDeclaration.field("testString").returning("java.lang.String");
-		field.annotations().add(ClassName.of("org.springframework.beans.factory.annotation.Autowired"));
+		field.annotations().addSingle(ClassName.of("org.springframework.beans.factory.annotation.Autowired"));
 		test.addFieldDeclaration(field);
 		List<String> lines = writeSingleType(sourceCode, "com/example/Test.groovy");
 		assertThat(lines).containsExactly("package com.example", "",
@@ -283,7 +283,7 @@ class GroovySourceCodeWriterTests {
 		GroovySourceCode sourceCode = new GroovySourceCode();
 		GroovyCompilationUnit compilationUnit = sourceCode.createCompilationUnit("com.example", "Test");
 		GroovyTypeDeclaration test = compilationUnit.createTypeDeclaration("Test");
-		test.annotations().add(ClassName.of(annotationClassName), annotation);
+		test.annotations().addSingle(ClassName.of(annotationClassName), annotation);
 		return writeSingleType(sourceCode, "com/example/Test.groovy");
 	}
 
@@ -296,7 +296,7 @@ class GroovySourceCodeWriterTests {
 			.returning("void")
 			.parameters()
 			.body(CodeBlock.of(""));
-		method.annotations().add(ClassName.of("com.example.test.TestAnnotation"));
+		method.annotations().addSingle(ClassName.of("com.example.test.TestAnnotation"));
 		test.addMethodDeclaration(method);
 		List<String> lines = writeSingleType(sourceCode, "com/example/Test.groovy");
 		assertThat(lines).containsExactly("package com.example", "", "import com.example.test.TestAnnotation", "",

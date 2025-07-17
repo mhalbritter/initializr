@@ -310,7 +310,7 @@ class KotlinSourceCodeWriterTests {
 		KotlinSourceCode sourceCode = new KotlinSourceCode();
 		KotlinCompilationUnit compilationUnit = sourceCode.createCompilationUnit("com.example", "Test");
 		KotlinTypeDeclaration test = compilationUnit.createTypeDeclaration("Test");
-		test.annotations().add(ClassName.of("org.springframework.boot.autoconfigure.SpringBootApplication"));
+		test.annotations().addSingle(ClassName.of("org.springframework.boot.autoconfigure.SpringBootApplication"));
 		compilationUnit.addTopLevelFunction(KotlinFunctionDeclaration.function("main")
 			.parameters(Parameter.of("args", "Array<String>"))
 			.body(CodeBlock.ofStatement("$T<$L>(*args)", "org.springframework.boot.runApplication", "Test")));
@@ -352,7 +352,7 @@ class KotlinSourceCodeWriterTests {
 		KotlinSourceCode sourceCode = new KotlinSourceCode();
 		KotlinCompilationUnit compilationUnit = sourceCode.createCompilationUnit("com.example", "Test");
 		KotlinTypeDeclaration test = compilationUnit.createTypeDeclaration("Test");
-		test.annotations().add(ClassName.of(annotationClassName), annotation);
+		test.annotations().addSingle(ClassName.of(annotationClassName), annotation);
 		return writeSingleType(sourceCode, "com/example/Test.kt");
 	}
 
@@ -362,7 +362,7 @@ class KotlinSourceCodeWriterTests {
 		KotlinCompilationUnit compilationUnit = sourceCode.createCompilationUnit("com.example", "Test");
 		KotlinTypeDeclaration test = compilationUnit.createTypeDeclaration("Test");
 		KotlinFunctionDeclaration function = KotlinFunctionDeclaration.function("something").body(CodeBlock.of(""));
-		function.annotations().add(ClassName.of("com.example.test.TestAnnotation"));
+		function.annotations().addSingle(ClassName.of("com.example.test.TestAnnotation"));
 		test.addFunctionDeclaration(function);
 		List<String> lines = writeSingleType(sourceCode, "com/example/Test.kt");
 		assertThat(lines).containsExactly("package com.example", "", "import com.example.test.TestAnnotation", "",

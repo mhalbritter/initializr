@@ -158,7 +158,7 @@ public final class Parameter implements Annotatable {
 		 * @return this for method chaining
 		 */
 		public Builder annotate(ClassName className, Consumer<Annotation.Builder> annotation) {
-			this.annotations.add(className, annotation);
+			this.annotations.addSingle(className, annotation);
 			return this;
 		}
 

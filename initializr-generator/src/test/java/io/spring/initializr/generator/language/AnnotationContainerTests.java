@@ -40,28 +40,28 @@ class AnnotationContainerTests {
 	@Test
 	void isEmptyWithAnnotation() {
 		AnnotationContainer container = new AnnotationContainer();
-		container.add(TEST_CLASS_NAME, (annotation) -> annotation.add("value", "test"));
+		container.addSingle(TEST_CLASS_NAME, (annotation) -> annotation.add("value", "test"));
 		assertThat(container.isEmpty()).isFalse();
 	}
 
 	@Test
 	void hasWithMatchingAnnotation() {
 		AnnotationContainer container = new AnnotationContainer();
-		container.add(TEST_CLASS_NAME, (annotation) -> annotation.add("value", "test"));
+		container.addSingle(TEST_CLASS_NAME, (annotation) -> annotation.add("value", "test"));
 		assertThat(container.has(TEST_CLASS_NAME)).isTrue();
 	}
 
 	@Test
 	void hasWithNonMatchingAnnotation() {
 		AnnotationContainer container = new AnnotationContainer();
-		container.add(TEST_CLASS_NAME, (annotation) -> annotation.add("value", "test"));
+		container.addSingle(TEST_CLASS_NAME, (annotation) -> annotation.add("value", "test"));
 		assertThat(container.has(ClassName.of("com.example.Another"))).isFalse();
 	}
 
 	@Test
 	void valuesWithSimpleAnnotation() {
 		AnnotationContainer container = new AnnotationContainer();
-		container.add(TEST_CLASS_NAME, (annotation) -> annotation.add("value", "test"));
+		container.addSingle(TEST_CLASS_NAME, (annotation) -> annotation.add("value", "test"));
 		assertThat(container.values()).singleElement().satisfies((annotation) -> {
 			assertThat(annotation.getClassName()).isEqualTo(TEST_CLASS_NAME);
 			assertThat(annotation.getImports()).containsOnly("com.example.Test");
@@ -75,8 +75,8 @@ class AnnotationContainerTests {
 	@Test
 	void addAnnotationSeveralTimeReuseConfiguration() {
 		AnnotationContainer container = new AnnotationContainer();
-		container.add(TEST_CLASS_NAME, (annotation) -> annotation.add("value", "test"));
-		container.add(TEST_CLASS_NAME, (annotation) -> annotation.add("value", "another"));
+		container.addSingle(TEST_CLASS_NAME, (annotation) -> annotation.add("value", "test"));
+		container.addSingle(TEST_CLASS_NAME, (annotation) -> annotation.add("value", "another"));
 		assertThat(container.values()).singleElement().satisfies((annotation) -> {
 			assertThat(annotation.getClassName()).isEqualTo(TEST_CLASS_NAME);
 			assertThat(annotation.getImports()).containsOnly("com.example.Test");
@@ -90,9 +90,9 @@ class AnnotationContainerTests {
 	@Test
 	void addAnnotationSeveralTimeCanReplaceAttribute() {
 		AnnotationContainer container = new AnnotationContainer();
-		container.add(TEST_CLASS_NAME,
+		container.addSingle(TEST_CLASS_NAME,
 				(annotation) -> annotation.add("value", Annotation.of(NESTED_CLASS_NAME).add("counter", 42).build()));
-		container.add(TEST_CLASS_NAME,
+		container.addSingle(TEST_CLASS_NAME,
 				(annotation) -> annotation.set("value", Annotation.of(NESTED_CLASS_NAME).add("counter", 24).build()));
 		assertThat(container.values()).singleElement().satisfies((annotation) -> {
 			assertThat(annotation.getClassName()).isEqualTo(TEST_CLASS_NAME);
@@ -113,16 +113,16 @@ class AnnotationContainerTests {
 	@Test
 	void removeWithMatchingAnnotation() {
 		AnnotationContainer container = new AnnotationContainer();
-		container.add(TEST_CLASS_NAME, (annotation) -> annotation.add("value", "test"));
-		assertThat(container.remove(TEST_CLASS_NAME)).isTrue();
+		container.addSingle(TEST_CLASS_NAME, (annotation) -> annotation.add("value", "test"));
+		assertThat(container.removeSingle(TEST_CLASS_NAME)).isTrue();
 		assertThat(container.isEmpty()).isTrue();
 	}
 
 	@Test
 	void removeWithNonMatchingAnnotation() {
 		AnnotationContainer container = new AnnotationContainer();
-		container.add(TEST_CLASS_NAME, (annotation) -> annotation.add("value", "test"));
-		assertThat(container.remove(ClassName.of("com.example.Another"))).isFalse();
+		container.addSingle(TEST_CLASS_NAME, (annotation) -> annotation.add("value", "test"));
+		assertThat(container.removeSingle(ClassName.of("com.example.Another"))).isFalse();
 		assertThat(container.isEmpty()).isFalse();
 	}
 
