@@ -20,4 +20,7 @@
  * unit} implementation and a write for Kotlin
  * {@link io.spring.initializr.generator.language.kotlin.KotlinSourceCode source code}.
  */
+@NullMarked
 package io.spring.initializr.generator.language.kotlin;
+
+import org.jspecify.annotations.NullMarked;
