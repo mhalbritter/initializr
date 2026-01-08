@@ -272,12 +272,12 @@ public class MavenBuildWriter {
 		});
 	}
 
-	private Predicate<DependencyScope> hasScope(DependencyScope... validScopes) {
-		return (scope) -> Arrays.asList(validScopes).contains(scope);
+	private Predicate<@Nullable DependencyScope> hasScope(DependencyScope... validScopes) {
+		return (scope) -> scope != null && Arrays.asList(validScopes).contains(scope);
 	}
 
 	private Collection<Dependency> writeDependencies(IndentingWriter writer, DependencyContainer dependencies,
-			Predicate<DependencyScope> filter) {
+			Predicate<@Nullable DependencyScope> filter) {
 		Collection<Dependency> candidates = dependencies.items()
 			.filter((dep) -> filter.test(dep.getScope()))
 			.sorted(getDependencyComparator())

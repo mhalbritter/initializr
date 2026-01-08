@@ -181,8 +181,8 @@ public abstract class GradleBuildWriter {
 		}
 	}
 
-	private Predicate<DependencyScope> hasScope(DependencyScope... validScopes) {
-		return (scope) -> Arrays.asList(validScopes).contains(scope);
+	private Predicate<@Nullable DependencyScope> hasScope(DependencyScope... validScopes) {
+		return (scope) -> scope != null && Arrays.asList(validScopes).contains(scope);
 	}
 
 	/**
@@ -322,7 +322,7 @@ public abstract class GradleBuildWriter {
 	protected abstract void writeProperty(IndentingWriter writer, String name, @Nullable String value);
 
 	private Collection<Dependency> filterDependencies(DependencyContainer dependencies,
-			Predicate<DependencyScope> filter) {
+			Predicate<@Nullable DependencyScope> filter) {
 		return dependencies.items()
 			.filter((dep) -> filter.test(dep.getScope()))
 			.sorted(getDependencyComparator())
