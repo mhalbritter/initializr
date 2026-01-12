@@ -158,14 +158,12 @@ class ProjectMetadataControllerIntegrationTests extends AbstractInitializrContro
 		validateDefaultMetadata(getMetadataJson());
 	}
 
-	private String getMetadataJson() {
+	private @Nullable String getMetadataJson() {
 		return getMetadataJson(null);
 	}
 
-	private String getMetadataJson(@Nullable String userAgentHeader, String... acceptHeaders) {
-		String body = invokeHome(userAgentHeader, acceptHeaders).getBody();
-		assertThat(body).isNotNull();
-		return body;
+	private @Nullable String getMetadataJson(@Nullable String userAgentHeader, String... acceptHeaders) {
+		return invokeHome(userAgentHeader, acceptHeaders).getBody();
 	}
 
 }
