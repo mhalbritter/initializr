@@ -17,4 +17,7 @@
 /**
  * Support classes for web endpoints.
  */
+@NullMarked
 package io.spring.initializr.web.support;
+
+import org.jspecify.annotations.NullMarked;
