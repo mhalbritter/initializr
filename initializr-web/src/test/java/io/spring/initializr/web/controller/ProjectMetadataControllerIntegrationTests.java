@@ -19,6 +19,7 @@ package io.spring.initializr.web.controller;
 import io.spring.initializr.web.AbstractInitializrControllerIntegrationTests;
 import io.spring.initializr.web.AbstractInitializrIntegrationTests;
 import io.spring.initializr.web.mapper.InitializrMetadataVersion;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONCompareMode;
@@ -161,8 +162,10 @@ class ProjectMetadataControllerIntegrationTests extends AbstractInitializrContro
 		return getMetadataJson(null);
 	}
 
-	private String getMetadataJson(String userAgentHeader, String... acceptHeaders) {
-		return invokeHome(userAgentHeader, acceptHeaders).getBody();
+	private String getMetadataJson(@Nullable String userAgentHeader, String... acceptHeaders) {
+		String body = invokeHome(userAgentHeader, acceptHeaders).getBody();
+		assertThat(body).isNotNull();
+		return body;
 	}
 
 }

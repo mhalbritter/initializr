@@ -42,6 +42,7 @@ import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.io.TempDir;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -205,11 +206,11 @@ public abstract class AbstractInitializrIntegrationTests {
 		return this.restTemplate.getForEntity(createUrl(context), byte[].class);
 	}
 
-	protected ResponseEntity<String> invokeHome(String userAgentHeader, String... acceptHeaders) {
+	protected ResponseEntity<String> invokeHome(@Nullable String userAgentHeader, String... acceptHeaders) {
 		return execute("/", String.class, userAgentHeader, acceptHeaders);
 	}
 
-	protected <T> ResponseEntity<T> execute(String contextPath, Class<T> responseType, String userAgentHeader,
+	protected <T> ResponseEntity<T> execute(String contextPath, Class<T> responseType, @Nullable String userAgentHeader,
 			String... acceptHeaders) {
 		HttpHeaders headers = new HttpHeaders();
 		if (userAgentHeader != null) {
