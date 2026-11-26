@@ -23,7 +23,7 @@ jobs:
             name: MacOS
             deploy-snapshots: false
     name: Build (${{ matrix.runner.name }})
-    if: ${{ github.repository == 'spring-io/initializr' }}
+    if: ${{ github.repository == 'spring-io/initializr' || github.repository == 'mhalbritter/initializr' }}
     runs-on: ${{ matrix.runner.os }}
     steps:
       - name: Check out
@@ -33,15 +33,24 @@ jobs:
         uses: actions/setup-java@v6.3.0
         with:
           java-version-file: '.sdkmanrc'
-          cache: 'maven'
 
       - name: Set up JDK 17
         uses: actions/setup-java@v6.3.0
         with:
           java-version: '17'
           distribution: 'liberica'
-          cache: 'maven'
           set-default: false
+
+      # Proves the build doesn't bypass the mirror
+      - name: Blackhole Maven Central
+        uses: mhalbritter/maven-central-proxying/.github/actions/blackhole-maven-central@main
+
+      - name: Set up Maven Central mirror
+        uses: mhalbritter/maven-central-proxying/.github/actions/maven-central-mirror@main
+        with:
+          url: ${{ secrets.MAVEN_MIRROR_URL }}
+          username: ${{ secrets.MAVEN_MIRROR_USERNAME }}
+          password: ${{ secrets.MAVEN_MIRROR_PASSWORD }}
 
       - name: Maven verify
         if: ${{ !matrix.runner.deploy-snapshots }}
@@ -52,7 +61,7 @@ jobs:
         run: ./mvnw --no-transfer-progress --batch-mode --update-snapshots -DaltDeploymentRepository=local::file:./maven-repo/ -Pfull deploy
 
       - name: Deploy to repo.spring.io
-        if: ${{ matrix.runner.deploy-snapshots }}
+        if: ${{ matrix.runner.deploy-snapshots && github.repository == 'spring-io/initializr' }}
         uses: spring-io/artifactory-deploy-action@v0.0.8
         with:
           uri: 'https://repo.spring.io'
@@ -68,7 +77,7 @@ jobs:
 
       - name: Send notification
         uses: $/.github/actions/send-notification
-        if: always()
+        if: ${{ always() && github.repository == 'spring-io/initializr' }}
         with:
           webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK }}
           status: ${{ job.status }}

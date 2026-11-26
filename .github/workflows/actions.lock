@@ -9,6 +9,7 @@ workflows:
     '.github/workflows/build.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-java@v6.3.0'
+        - 'mhalbritter/maven-central-proxying@main'
         - 'spring-io/artifactory-deploy-action@v0.0.8'
     '.github/workflows/release.yml':
         - 'actions/checkout@v7.0.1'
@@ -36,6 +37,11 @@ dependencies:
         commit: 'sha1-4c2f06da03095113100534a16d58d8a252680949'
         owner_id: 499942
         repo_id: 210126940
+    'mhalbritter/maven-central-proxying@main':
+        ref: 'main'
+        commit: 'sha1-f2288ddfdf75aedbb4d682e3f5524679be610ee8'
+        owner_id: 98899556
+        repo_id: 1472832750
     'spring-io/artifactory-deploy-action@v0.0.8':
         ref: 'v0.0.8'
         commit: 'sha1-860632611280011966e3f460520dca3733bd9a93'
