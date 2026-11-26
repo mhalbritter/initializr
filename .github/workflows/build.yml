@@ -33,12 +33,14 @@ jobs:
         uses: actions/setup-java@v6.3.0
         with:
           java-version-file: '.sdkmanrc'
+          cache: 'maven'
 
       - name: Set up JDK 17
         uses: actions/setup-java@v6.3.0
         with:
           java-version: '17'
           distribution: 'liberica'
+          cache: 'maven'
           set-default: false
 
       # Proves the build doesn't bypass the mirror
