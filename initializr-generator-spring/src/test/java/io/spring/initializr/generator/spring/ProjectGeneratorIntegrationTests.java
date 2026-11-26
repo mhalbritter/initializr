@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.Map;
 
 import io.spring.initializr.generator.buildsystem.BuildSystem;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
@@ -31,6 +32,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.SpringBootVersion;
 import org.springframework.util.FileSystemUtils;
+import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,6 +48,16 @@ class ProjectGeneratorIntegrationTests {
 	private static final String JAVA_VERSION = "17";
 
 	private static final String DEPENDENCY_MANAGEMENT_PLUGIN_VERSION = "1.1.7";
+
+	private static final String MIRROR_URL_ENV = "MAVEN_MIRROR_URL";
+
+	// Maven mirror env (e.g. set by CI) to Maven Wrapper env
+	private static final Map<String, String> MIRROR_TO_WRAPPER_ENV = Map.of(MIRROR_URL_ENV, "MVNW_REPOURL",
+			"MAVEN_MIRROR_USERNAME", "MVNW_USERNAME", "MAVEN_MIRROR_PASSWORD", "MVNW_PASSWORD");
+
+	private static final String GRADLE_USER_HOME_ENV = "GRADLE_USER_HOME";
+
+	private static final String GRADLE_INIT_DIR = "init.d";
 
 	private ProjectGeneratorTester projectTester;
 
@@ -127,7 +139,7 @@ class ProjectGeneratorIntegrationTests {
 			.isEqualTo(0);
 	}
 
-	private ProcessBuilder createProcessBuilder(Path directory, BuildSystem buildSystem, Path home) {
+	private ProcessBuilder createProcessBuilder(Path directory, BuildSystem buildSystem, Path home) throws IOException {
 		String javaHome = System.getProperty("java.home");
 		if (buildSystem.id().equals(MavenBuildSystem.ID)) {
 			String command = (isWindows()) ? "mvnw.cmd" : "mvnw";
@@ -138,6 +150,7 @@ class ProjectGeneratorIntegrationTests {
 				processBuilder.environment().put("JAVA_HOME", javaHome);
 			}
 			processBuilder.environment().put("MAVEN_USER_HOME", home.toAbsolutePath().toString());
+			forwardMirror(processBuilder.environment());
 			processBuilder.directory(directory.toFile());
 			return processBuilder;
 		}
@@ -148,11 +161,46 @@ class ProjectGeneratorIntegrationTests {
 			if (javaHome != null) {
 				processBuilder.environment().put("JAVA_HOME", javaHome);
 			}
-			processBuilder.environment().put("GRADLE_USER_HOME", home.toAbsolutePath().toString());
+			processBuilder.environment().put(GRADLE_USER_HOME_ENV, home.toAbsolutePath().toString());
+			copyInitScripts(home);
 			processBuilder.directory(directory.toFile());
 			return processBuilder;
 		}
 		throw new IllegalStateException("Unknown build system '%s'".formatted(buildSystem.id()));
+	}
+
+	// The outer mvnw unsets MVNW_*, so the generated mvnw would download Maven from
+	// Maven Central. Restore them from the mirror env, if any.
+	private void forwardMirror(Map<String, String> environment) {
+		if (!StringUtils.hasText(System.getenv(MIRROR_URL_ENV))) {
+			return;
+		}
+
+		MIRROR_TO_WRAPPER_ENV.forEach((mirror, wrapper) -> {
+			String value = System.getenv(mirror);
+			if (value != null) {
+				environment.put(wrapper, value);
+			}
+		});
+	}
+
+	// The temp Gradle home starts empty. Copy init scripts, e.g. a mirror set up by CI.
+	private void copyInitScripts(Path home) throws IOException {
+		Path initScripts = gradleUserHome().resolve(GRADLE_INIT_DIR);
+		if (!Files.isDirectory(initScripts)) {
+			return;
+		}
+
+		FileSystemUtils.copyRecursively(initScripts, home.resolve(GRADLE_INIT_DIR));
+	}
+
+	private Path gradleUserHome() {
+		String home = System.getenv(GRADLE_USER_HOME_ENV);
+		if (StringUtils.hasText(home)) {
+			return Path.of(home);
+		}
+
+		return Path.of(System.getProperty("user.home"), ".gradle");
 	}
 
 	private boolean isWindows() {
