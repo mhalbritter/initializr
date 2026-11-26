@@ -8,6 +8,8 @@ package io.spring.initializr.versionresolver;
 import java.nio.file.Path;
 import java.util.Map;
 
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.util.repository.AuthenticationBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,11 +27,32 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  */
 class DefaultMavenVersionResolverTests {
 
+	// Maven mirror env, e.g. set by CI
+	private static final String MIRROR_URL_ENV = "MAVEN_MIRROR_URL";
+
+	private static final String MIRROR_USERNAME_ENV = "MAVEN_MIRROR_USERNAME";
+
+	private static final String MIRROR_PASSWORD_ENV = "MAVEN_MIRROR_PASSWORD";
+
 	private MavenVersionResolver resolver;
 
 	@BeforeEach
 	void createResolver(@TempDir Path temp) {
-		this.resolver = new DefaultMavenVersionResolver(temp);
+		String mirrorUrl = System.getenv(MIRROR_URL_ENV);
+		if (mirrorUrl == null || mirrorUrl.isBlank()) {
+			this.resolver = new DefaultMavenVersionResolver(temp);
+			return;
+		}
+
+		this.resolver = new DefaultMavenVersionResolver(temp, mirror(mirrorUrl));
+	}
+
+	private static RemoteRepository mirror(String url) {
+		AuthenticationBuilder authentication = new AuthenticationBuilder()
+			.addUsername(System.getenv(MIRROR_USERNAME_ENV))
+			.addPassword(System.getenv(MIRROR_PASSWORD_ENV));
+		return new RemoteRepository.Builder("maven-mirror", "default", url).setAuthentication(authentication.build())
+			.build();
 	}
 
 	@AfterEach

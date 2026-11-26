@@ -7,7 +7,6 @@ package io.spring.initializr.versionresolver;
 
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +26,7 @@ import org.apache.maven.repository.supplier.SessionBuilderSupplier;
 import org.eclipse.aether.ConfigurationProperties;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession.CloseableSession;
+import org.eclipse.aether.RepositorySystemSession.SessionBuilder;
 import org.eclipse.aether.RequestTrace;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.graph.Dependency;
@@ -39,7 +39,10 @@ import org.eclipse.aether.resolution.ArtifactDescriptorResult;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.ArtifactResult;
+import org.eclipse.aether.util.repository.DefaultAuthenticationSelector;
+import org.eclipse.aether.util.repository.DefaultMirrorSelector;
 import org.eclipse.aether.util.repository.SimpleArtifactDescriptorPolicy;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A {@link MavenVersionResolver} that resolves versions using Maven Resolver. Maven's
@@ -67,9 +70,6 @@ class DefaultMavenVersionResolver implements MavenVersionResolver {
 			"https://repo.spring.io/snapshot")
 		.build();
 
-	private static final List<RemoteRepository> repositories = Arrays.asList(mavenCentral, springMilestones,
-			springSnapshots);
-
 	private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(10);
 
 	private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(30);
@@ -82,17 +82,39 @@ class DefaultMavenVersionResolver implements MavenVersionResolver {
 
 	private final RepositorySystem repositorySystem;
 
+	private final List<RemoteRepository> repositories;
+
 	DefaultMavenVersionResolver(Path cacheLocation) {
+		this(cacheLocation, null);
+	}
+
+	// Routes Maven Central through the mirror, if any, e.g. in a network without access
+	// to Maven Central
+	DefaultMavenVersionResolver(Path cacheLocation, @Nullable RemoteRepository centralMirror) {
+		this.repositories = List.of((centralMirror != null) ? centralMirror : mavenCentral, springMilestones,
+				springSnapshots);
 		RepositorySystemSupplier repositorySystemSupplier = new RepositorySystemSupplier();
 		this.repositorySystem = repositorySystemSupplier.get();
-		this.repositorySystemSession = new SessionBuilderSupplier(this.repositorySystem).get()
+		SessionBuilder sessionBuilder = new SessionBuilderSupplier(this.repositorySystem).get()
 			.setArtifactDescriptorPolicy(new SimpleArtifactDescriptorPolicy(false, false))
 			.withLocalRepositoryBaseDirectories(cacheLocation)
 			.setUserProperties(System.getProperties())
 			.setConfigProperty(ConfigurationProperties.CONNECT_TIMEOUT, CONNECT_TIMEOUT.toMillis())
-			.setConfigProperty(ConfigurationProperties.REQUEST_TIMEOUT, REQUEST_TIMEOUT.toMillis())
-			.build();
+			.setConfigProperty(ConfigurationProperties.REQUEST_TIMEOUT, REQUEST_TIMEOUT.toMillis());
+		if (centralMirror != null) {
+			mirrorCentral(sessionBuilder, centralMirror);
+		}
+		this.repositorySystemSession = sessionBuilder.build();
 		this.remoteRepositoryManager = repositorySystemSupplier.getRemoteRepositoryManager();
+	}
+
+	// Maven's super POM and resolved POMs declare Central too, with id 'central'.
+	// Mirror it, like <mirrorOf>central</mirrorOf> in settings.xml.
+	private static void mirrorCentral(SessionBuilder sessionBuilder, RemoteRepository mirror) {
+		sessionBuilder.setMirrorSelector(new DefaultMirrorSelector().add(mirror.getId(), mirror.getUrl(),
+				mirror.getContentType(), false, false, mavenCentral.getId(), "*"));
+		sessionBuilder.setAuthenticationSelector(
+				new DefaultAuthenticationSelector().add(mirror.getId(), mirror.getAuthentication()));
 	}
 
 	@Override
@@ -132,7 +154,7 @@ class DefaultMavenVersionResolver implements MavenVersionResolver {
 			try {
 				return this.repositorySystem.readArtifactDescriptor(this.repositorySystemSession,
 						new ArtifactDescriptorRequest(new DefaultArtifact(groupId, artifactId, "pom", version),
-								repositories, null));
+								this.repositories, null));
 			}
 			catch (ArtifactDescriptorException ex) {
 				throw new IllegalStateException(
@@ -147,7 +169,7 @@ class DefaultMavenVersionResolver implements MavenVersionResolver {
 			RequestTrace requestTrace = new RequestTrace(null);
 
 			ModelResolver modelResolver = new ProjectModelResolver(this.repositorySystemSession, requestTrace,
-					this.repositorySystem, this.remoteRepositoryManager, repositories,
+					this.repositorySystem, this.remoteRepositoryManager, this.repositories,
 					ProjectBuildingRequest.RepositoryMerging.POM_DOMINANT, null);
 			DefaultModelBuildingRequest modelBuildingRequest = new DefaultModelBuildingRequest();
 			modelBuildingRequest.setSystemProperties(System.getProperties());
@@ -172,7 +194,7 @@ class DefaultMavenVersionResolver implements MavenVersionResolver {
 		synchronized (this.monitor) {
 			try {
 				return this.repositorySystem.resolveArtifact(this.repositorySystemSession, new ArtifactRequest(
-						new DefaultArtifact(groupId, artifactId, "pom", version), repositories, null));
+						new DefaultArtifact(groupId, artifactId, "pom", version), this.repositories, null));
 			}
 			catch (ArtifactResolutionException ex) {
 				throw new IllegalStateException(
